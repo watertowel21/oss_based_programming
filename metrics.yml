@@ -1,0 +1,17 @@
+# .github/workflows/metrics.yml
+name: Track Lead Time
+on:
+pull_request:
+types: [closed]
+jobs:
+track-lead-time:
+# PR이 병합되었을 때만 실행
+if: github.event.pull_request.merged == true
+runs-on: ubuntu-latest
+steps:- name: Calculate Lead Time
+run: |
+FIRST_COMMIT_TIME="${{ github.event.pull_request.created_at }}"
+MERGE_TIME="${{ github.event.pull_request.merged_at }}"
+# 시간 차이 계산 (초 단위)
+LEAD_TIME=$(($(date-d "$MERGE_TIME" +%s)- $(date-d "$FIRST_COMMIT_TIME" +%s)))
+echo "Lead Time: $LEAD_TIME seconds"
