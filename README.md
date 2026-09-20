@@ -35,6 +35,10 @@ It uses GitHub API data from the previous 30 days to calculate lead time for
 changes, deployment frequency, mean time to recovery, and change failure rate.
 Each run uploads the results as the `dora-metrics` JSON artifact.
 
+## Assignment 3: improvement plan
+
+The data-driven improvement plan is documented in [`IMPROVEMENT.md`](IMPROVEMENT.md), including the current baseline, bottleneck analysis, SMART goals, roadmap, expected outcomes, and submission links.
+
 ## Pulseboard dashboard
 
 `react-practice` contains a GitHub API-powered delivery dashboard. It collects repository metadata, pull requests, issues, commits, and deployments, then presents lead time for changes, issue cycle time, deployment frequency, open issues, and recent activity. Data is refreshed with the **Refresh data** button and uses a 30-day reporting window.
