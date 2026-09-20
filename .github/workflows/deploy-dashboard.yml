@@ -32,7 +32,7 @@ jobs:
           cache: npm
           cache-dependency-path: react-practice/package-lock.json
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
         working-directory: react-practice
       - name: Build dashboard
         run: npm run build
