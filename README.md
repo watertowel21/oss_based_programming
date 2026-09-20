@@ -39,3 +39,5 @@ W 13-16: 프로그램 테스트, 코드 리팩토링, 발표준비
   3. 평균 복구 시간 (Mean time to recovery)
   4. 변경 실패율 (Change failure rate)
 * **결과 저장:** 계산된 최종 지표 결과는 워크플로우 실행 완료 후 `dora-metrics.json` 형태의 Artifact 파일로 업로드되어 확인할 수 있습니다.
+##실행 성공 로그 스크린샷
+<img width="1428" height="1436" alt="스크린샷 2026-09-20 165033" src="https://github.com/user-attachments/assets/3f307718-52ad-4f9b-a99f-f65618b1d10d" />
