@@ -28,43 +28,14 @@ W 5-8: 핵심기능 구현(C++기반 힙 자료구조 직접 구현 및 매칭 �
 W 9-12: 파이썬 연동(C++ 체결 처리 결과를 파이썬에서 읽어들여 체결률 및 가격변동 시각화)
 W 13-16: 프로그램 테스트, 코드 리팩토링, 발표준비
 
-## DORA metrics
+## DORA metrics (구현 방법)
 
-The `Collect DORA metrics` workflow runs for pull request and deployment events.
-It uses GitHub API data from the previous 30 days to calculate lead time for
-changes, deployment frequency, mean time to recovery, and change failure rate.
-Each run uploads the results as the `dora-metrics` JSON artifact.
+본 리포지토리의 DORA 메트릭 수집 워크플로우(`metrics.yml`)는 다음과 같은 원리로 구현되었습니다.
 
-## Pulseboard dashboard
-
-`react-practice` contains a GitHub API-powered delivery dashboard. It collects repository metadata, pull requests, issues, commits, and deployments, then presents lead time for changes, issue cycle time, deployment frequency, open issues, and recent activity. Data is refreshed with the **Refresh data** button and uses a 30-day reporting window.
-
-### Run locally
-
-```bash
-cd react-practice
-npm install
-npm start
-```
-
-Open `http://localhost:3000` and enter any public repository as `owner/name`.
-Unauthenticated requests are supported, but GitHub's public API has a low rate limit. For local development, create a fine-grained GitHub token with read-only repository metadata, issues, pull requests, contents, and deployments access, then provide it without committing it:
-
-```powershell
-$env:REACT_APP_GITHUB_TOKEN="github_pat_..."
-$env:REACT_APP_GITHUB_REPOSITORY="owner/name"
-npm start
-```
-
-`REACT_APP_GITHUB_TOKEN` is optional. CRA embeds environment variables in the browser bundle, so use a read-only token and never use a production secret here. The dashboard does not send data anywhere except `api.github.com`.
-
-### API and metric notes
-
-The frontend uses GitHub REST endpoints for repository metadata, pull requests, issues, commits, and deployments. Lead time is the average time from pull request creation to merge; issue cycle time is the average time from issue creation to close; deployment frequency is deployments per day in the last 30 days. GitHub returns at most the latest 100 records for each resource in this client, and the UI explicitly surfaces loading, API error, and no-data states.
-
-### Validation
-
-```bash
-npm test -- --watchAll=false
-npm run build
-```
+* **실행 조건(Trigger):** Pull Request가 열리거나 닫힐 때, 그리고 새로운 배포(Deployment) 이벤트가 발생할 때 자동으로 실행되도록 설정했습니다. (수동 실행도 지원합니다.)
+* **데이터 수집 및 계산:** GitHub API를 활용하여 최근 30일간의 데이터를 불러옵니다. 이를 바탕으로 DORA의 4가지 핵심 지표를 계산합니다.
+  1. 변경 리드 타임 (Lead time for changes)
+  2. 배포 빈도 (Deployment frequency)
+  3. 평균 복구 시간 (Mean time to recovery)
+  4. 변경 실패율 (Change failure rate)
+* **결과 저장:** 계산된 최종 지표 결과는 워크플로우 실행 완료 후 `dora-metrics.json` 형태의 Artifact 파일로 업로드되어 확인할 수 있습니다.
