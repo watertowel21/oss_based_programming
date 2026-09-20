@@ -44,15 +44,15 @@ W 13-16: 프로그램 테스트, 코드 리팩토링, 발표준비
 
 <img width="1428" height="1436" alt="스크린샷 2026-09-20 165033" src="https://github.com/user-attachments/assets/3f307718-52ad-4f9b-a99f-f65618b1d10d" />
 
-## Assignment 3: improvement plan
+## 과제 3: 개선 계획
 
-The data-driven improvement plan is documented in [`IMPROVEMENT.md`](IMPROVEMENT.md), including the current baseline, bottleneck analysis, SMART goals, roadmap, expected outcomes, and submission links.
+데이터 기반 개선 계획은 [`IMPROVEMENT.md`](IMPROVEMENT.md)에 정리되어 있습니다. 문서에는 현재 기준선, 병목 지점 분석, SMART 목표, 실행 로드맵, 예상 성과 및 제출 링크가 포함되어 있습니다.
 
-## Pulseboard dashboard
+## Pulseboard 대시보드
 
-`react-practice` contains a GitHub API-powered delivery dashboard. It collects repository metadata, pull requests, issues, commits, and deployments, then presents lead time for changes, issue cycle time, deployment frequency, open issues, and recent activity. Data is refreshed with the **Refresh data** button and uses a 30-day reporting window.
+`react-practice`에는 GitHub API 기반의 소프트웨어 delivery 대시보드가 구현되어 있습니다. 저장소 메타데이터, Pull Request, Issue, Commit, Deployment 정보를 수집하여 변경 리드 타임, 이슈 처리 주기, 배포 빈도, 미해결 이슈 수 및 최근 활동량을 보여줍니다. **데이터 새로고침** 버튼으로 데이터를 다시 불러올 수 있으며, 최근 30일을 기준으로 지표를 계산합니다.
 
-### Run locally
+### 로컬에서 실행하기
 
 ```bash
 cd react-practice
@@ -60,8 +60,9 @@ npm install
 npm start
 ```
 
-Open `http://localhost:3000` and enter any public repository as `owner/name`.
-Unauthenticated requests are supported, but GitHub's public API has a low rate limit. For local development, create a fine-grained GitHub token with read-only repository metadata, issues, pull requests, contents, and deployments access, then provide it without committing it:
+`http://localhost:3000`을 열고 `owner/name` 형식으로 공개 저장소를 입력합니다.
+
+인증 없이도 요청할 수 있지만 GitHub 공개 API의 요청 한도는 낮습니다. 로컬 개발 시 저장소 메타데이터, 이슈, Pull Request, 콘텐츠 및 배포 정보를 읽을 수 있는 권한만 가진 fine-grained GitHub 토큰을 생성한 후, 토큰을 커밋하지 않고 다음과 같이 설정합니다.
 
 ```powershell
 $env:REACT_APP_GITHUB_TOKEN="github_pat_..."
@@ -69,13 +70,13 @@ $env:REACT_APP_GITHUB_REPOSITORY="owner/name"
 npm start
 ```
 
-`REACT_APP_GITHUB_TOKEN` is optional. CRA embeds environment variables in the browser bundle, so use a read-only token and never use a production secret here. The dashboard does not send data anywhere except `api.github.com`.
+`REACT_APP_GITHUB_TOKEN`은 선택 사항입니다. CRA는 환경 변수를 브라우저 번들에 포함하므로 읽기 전용 토큰만 사용해야 하며, 운영 환경의 비밀키를 입력해서는 안 됩니다. 대시보드는 `api.github.com` 이외의 곳으로 데이터를 전송하지 않습니다.
 
-### API and metric notes
+### API 및 지표 산정 방식
 
-The frontend uses GitHub REST endpoints for repository metadata, pull requests, issues, commits, and deployments. Lead time is the average time from pull request creation to merge; issue cycle time is the average time from issue creation to close; deployment frequency is deployments per day in the last 30 days. GitHub returns at most the latest 100 records for each resource in this client, and the UI explicitly surfaces loading, API error, and no-data states.
+프론트엔드는 GitHub REST API를 사용하여 저장소 메타데이터, Pull Request, Issue, Commit 및 Deployment 정보를 가져옵니다. 변경 리드 타임은 Pull Request 생성부터 병합까지의 평균 시간이며, 이슈 처리 주기는 이슈 생성부터 종료까지의 평균 시간입니다. 배포 빈도는 최근 30일 동안의 하루 평균 배포 횟수로 계산합니다. 이 클라이언트는 각 리소스에서 최신 100개 항목까지 사용하며, 화면에서 로딩 중, API 오류 및 데이터 없음 상태를 명확하게 표시합니다.
 
-### Validation
+### 검증 방법
 
 ```bash
 npm test -- --watchAll=false
