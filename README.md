@@ -39,5 +39,45 @@ W 13-16: 프로그램 테스트, 코드 리팩토링, 발표준비
   3. 평균 복구 시간 (Mean time to recovery)
   4. 변경 실패율 (Change failure rate)
 * **결과 저장:** 계산된 최종 지표 결과는 워크플로우 실행 완료 후 `dora-metrics.json` 형태의 Artifact 파일로 업로드되어 확인할 수 있습니다.
-##실행 성공 로그 스크린샷
+
+## 실행 성공 로그 스크린샷
+
 <img width="1428" height="1436" alt="스크린샷 2026-09-20 165033" src="https://github.com/user-attachments/assets/3f307718-52ad-4f9b-a99f-f65618b1d10d" />
+
+## Assignment 3: improvement plan
+
+The data-driven improvement plan is documented in [`IMPROVEMENT.md`](IMPROVEMENT.md), including the current baseline, bottleneck analysis, SMART goals, roadmap, expected outcomes, and submission links.
+
+## Pulseboard dashboard
+
+`react-practice` contains a GitHub API-powered delivery dashboard. It collects repository metadata, pull requests, issues, commits, and deployments, then presents lead time for changes, issue cycle time, deployment frequency, open issues, and recent activity. Data is refreshed with the **Refresh data** button and uses a 30-day reporting window.
+
+### Run locally
+
+```bash
+cd react-practice
+npm install
+npm start
+```
+
+Open `http://localhost:3000` and enter any public repository as `owner/name`.
+Unauthenticated requests are supported, but GitHub's public API has a low rate limit. For local development, create a fine-grained GitHub token with read-only repository metadata, issues, pull requests, contents, and deployments access, then provide it without committing it:
+
+```powershell
+$env:REACT_APP_GITHUB_TOKEN="github_pat_..."
+$env:REACT_APP_GITHUB_REPOSITORY="owner/name"
+npm start
+```
+
+`REACT_APP_GITHUB_TOKEN` is optional. CRA embeds environment variables in the browser bundle, so use a read-only token and never use a production secret here. The dashboard does not send data anywhere except `api.github.com`.
+
+### API and metric notes
+
+The frontend uses GitHub REST endpoints for repository metadata, pull requests, issues, commits, and deployments. Lead time is the average time from pull request creation to merge; issue cycle time is the average time from issue creation to close; deployment frequency is deployments per day in the last 30 days. GitHub returns at most the latest 100 records for each resource in this client, and the UI explicitly surfaces loading, API error, and no-data states.
+
+### Validation
+
+```bash
+npm test -- --watchAll=false
+npm run build
+```
