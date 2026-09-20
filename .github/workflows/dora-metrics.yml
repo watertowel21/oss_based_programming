@@ -1,0 +1,123 @@
+name: DORA Metrics Assignment
+
+on:
+  pull_request:
+    types: [opened, closed]
+  deployment:
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: read
+  pull-requests: read
+
+jobs:
+  collect:
+    name: Calculate DORA metrics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect metrics
+        id: metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const windowDays = 30;
+            const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+
+            const pullRequests = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'closed',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 100
+            });
+
+            const mergedPullRequests = pullRequests.filter((pullRequest) => {
+              return pullRequest.merged_at && new Date(pullRequest.merged_at) >= since;
+            });
+            const leadTimes = mergedPullRequests.map((pullRequest) => {
+              return (new Date(pullRequest.merged_at) - new Date(pullRequest.created_at)) / 3600000;
+            });
+
+            const deployments = await github.paginate(github.rest.repos.listDeployments, {
+              owner,
+              repo,
+              per_page: 100
+            });
+            const recentDeployments = deployments.filter((deployment) => {
+              return new Date(deployment.created_at) >= since;
+            });
+
+            const deploymentResults = [];
+            for (const deployment of recentDeployments) {
+              const statuses = await github.paginate(github.rest.repos.listDeploymentStatuses, {
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                per_page: 100
+              });
+              const latestStatus = statuses.sort((a, b) => {
+                return new Date(b.created_at) - new Date(a.created_at);
+              })[0];
+              if (latestStatus) {
+                deploymentResults.push({
+                  state: latestStatus.state,
+                  createdAt: new Date(deployment.created_at),
+                  statusAt: new Date(latestStatus.created_at)
+                });
+              }
+            }
+
+            const failedStates = new Set(['failure', 'error']);
+            const successfulDeployments = deploymentResults
+              .filter((deployment) => deployment.state === 'success')
+              .sort((a, b) => a.statusAt - b.statusAt);
+            const failedDeployments = deploymentResults.filter((deployment) => {
+              return failedStates.has(deployment.state);
+            });
+            const recoveryTimes = failedDeployments.flatMap((failedDeployment) => {
+              const recovery = successfulDeployments.find((successfulDeployment) => {
+                return successfulDeployment.statusAt > failedDeployment.statusAt;
+              });
+              return recovery
+                ? [(recovery.statusAt - failedDeployment.statusAt) / 3600000]
+                : [];
+            });
+
+            const average = (values) => values.length
+              ? values.reduce((sum, value) => sum + value, 0) / values.length
+              : null;
+            const metrics = {
+              generated_at: new Date().toISOString(),
+              window_days: windowDays,
+              window_start: since.toISOString(),
+              source_event: context.eventName,
+              lead_time_for_changes_hours: average(leadTimes),
+              merged_pull_requests: mergedPullRequests.length,
+              deployment_frequency_per_day: recentDeployments.length / windowDays,
+              deployments: recentDeployments.length,
+              mean_time_to_recovery_hours: average(recoveryTimes),
+              incidents_recovered: recoveryTimes.length,
+              change_failure_rate: recentDeployments.length
+                ? failedDeployments.length / recentDeployments.length
+                : 0,
+              failed_deployments: failedDeployments.length
+            };
+
+            const fs = require('fs');
+            fs.writeFileSync('dora-metrics.json', `${JSON.stringify(metrics, null, 2)}\n`);
+            core.setOutput('summary', JSON.stringify(metrics));
+            core.summary
+              .addHeading('DORA metrics')
+              .addCodeBlock(JSON.stringify(metrics, null, 2), 'json');
+            await core.summary.write();
+
+      - name: Upload metrics artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dora-metrics
+          path: dora-metrics.json
+          if-no-files-found: error
