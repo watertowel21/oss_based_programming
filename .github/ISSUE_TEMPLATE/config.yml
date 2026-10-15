@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 프로젝트 대시보드
+    url: https://github.com/users/watertowel21/projects/1
+    about: 작업 상태와 스프린트 진행 상황은 GitHub Project에서 확인합니다.
