@@ -1,0 +1,46 @@
+name: Reusable Node quality
+
+on:
+  workflow_call:
+    inputs:
+      node-versions:
+        description: JSON array of Node.js versions for the quality matrix
+        required: false
+        type: string
+        default: '["18.x", "20.x"]'
+    outputs:
+      quality-result:
+        description: Quality matrix result
+        value: ${{ jobs.quality.result }}
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint and test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ${{ fromJSON(inputs.node-versions) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js with cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: react-practice/package-lock.json
+      - name: Run reusable quality action
+        uses: ./.github/actions/node-quality
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Upload timing report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-timing-node-${{ matrix.node-version }}
+          path: react-practice/ci-timing-node-${{ matrix.node-version }}.txt
+          if-no-files-found: warn

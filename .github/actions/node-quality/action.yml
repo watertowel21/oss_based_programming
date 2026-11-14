@@ -1,0 +1,70 @@
+name: Node quality checks
+description: Install dependencies, lint, test, and record cache timing
+inputs:
+  node-version:
+    description: Node.js version used by the matrix job
+    required: true
+  working-directory:
+    description: Project directory
+    required: false
+    default: react-practice
+outputs:
+  duration-seconds:
+    description: Total quality-check duration in seconds
+    value: ${{ steps.timing.outputs.duration-seconds }}
+runs:
+  using: composite
+  steps:
+    - name: Record cache state before install
+      id: before
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        start="$(date +%s)"
+        cache_dir="$(npm config get cache)"
+        cache_size="$(du -sh "$cache_dir" 2>/dev/null | cut -f1 || echo 0B)"
+        {
+          echo "start=$start"
+          echo "cache_dir=$cache_dir"
+          echo "cache_size_before=$cache_size"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm install --no-audit --no-fund
+      env:
+        NPM_CONFIG_AUDIT: "false"
+
+    - name: Lint
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm run lint
+
+    - name: Test
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm test -- --watchAll=false --runInBand
+      env:
+        CI: true
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Record timing and cache state
+      id: timing
+      if: always()
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        end="$(date +%s)"
+        duration="$((end - ${{ steps.before.outputs.start }}))"
+        cache_size_after="$(du -sh "${{ steps.before.outputs.cache_dir }}" 2>/dev/null | cut -f1 || echo 0B)"
+        {
+          echo "node_version=${{ inputs.node-version }}"
+          echo "duration_seconds=$duration"
+          echo "cache_size_before=${{ steps.before.outputs.cache_size_before }}"
+          echo "cache_size_after=$cache_size_after"
+          echo "recorded_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        } | tee "ci-timing-node-${{ inputs.node-version }}.txt" >> "$GITHUB_STEP_SUMMARY"
+        echo "duration-seconds=$duration" >> "$GITHUB_OUTPUT"
