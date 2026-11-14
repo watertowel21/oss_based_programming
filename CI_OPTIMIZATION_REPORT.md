@@ -21,6 +21,8 @@ Composite action이 의존성 설치 전후 npm 캐시 크기와 install/lint/te
 | Node.js Matrix | 18/20을 직접 workflow에 정의 | reusable workflow 입력으로 18/20 실행 |
 | 캐시 | setup-node 캐시는 있었지만 측정 보고서 없음 | 캐시 전후 크기와 실행 시간 artifact 제공 |
 | 배포 조건 | push 시 build 후 배포 job 생성 | `main` push + dashboard 변경일 때만 배포 |
-| 실행 시간 | 이전 성공 실행: 약 25초(Node 18), 23초(Node 20) | 새 실행의 Node별 timing artifact로 측정 |
+| 품질 검증 시간 | 이전 성공 실행: 약 25초(Node 18), 23초(Node 20) | 최적화 후: 14초(Node 18), 9초(Node 20) |
 
-최종 수치와 artifact 링크는 최적화 workflow 실행 후 이 표의 `최적화 후` 열에 기록합니다. PR 실행에서는 배포하지 않으므로 안전하게 변경 검증만 수행합니다.
+측정 실행: [Actions run #43575063394](https://github.com/watertowel21/oss_based_programming/actions/runs/43575063394). 해당 PR 실행에서는 변경 감지, Matrix 품질 검증, build, timing artifact 업로드가 성공했고, `main` push가 아니므로 배포는 의도적으로 건너뛰었습니다.
+
+캐시 크기는 Node 18/20 모두 설치 전후 `62M`으로 유지되었습니다. 즉, 이 실행에서 캐시가 재사용되었고 추가 다운로드로 캐시가 증가하지 않았습니다. 실행 환경과 네트워크에 따라 절대 시간은 달라질 수 있으므로, 같은 workflow의 다음 실행과 함께 추세를 확인합니다.
