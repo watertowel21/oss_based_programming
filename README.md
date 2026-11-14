@@ -80,6 +80,12 @@ npm start
 - [개발 가이드](docs/wiki/Development-Guide.md)
 - [문제 해결](docs/wiki/Troubleshooting.md)
 
+## 오픈소스 기본 문서
+
+- [MIT License](LICENSE)
+- [기여 가이드](CONTRIBUTING.md)
+- [행동 강령](CODE_OF_CONDUCT.md)
+
 ### API 및 지표 산정 방식
 
 프론트엔드는 GitHub REST API를 사용하여 저장소 메타데이터, Pull Request, Issue, Commit 및 Deployment 정보를 가져옵니다. 변경 리드 타임은 Pull Request 생성부터 병합까지의 평균 시간이며, 이슈 처리 주기는 이슈 생성부터 종료까지의 평균 시간입니다. 배포 빈도는 최근 30일 동안의 하루 평균 배포 횟수로 계산합니다. 이 클라이언트는 각 리소스에서 최신 100개 항목까지 사용하며, 화면에서 로딩 중, API 오류 및 데이터 없음 상태를 명확하게 표시합니다.
