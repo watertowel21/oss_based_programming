@@ -72,6 +72,26 @@ npm start
 
 `REACT_APP_GITHUB_TOKEN`은 선택 사항입니다. CRA는 환경 변수를 브라우저 번들에 포함하므로 읽기 전용 토큰만 사용해야 하며, 운영 환경의 비밀키를 입력해서는 안 됩니다. 대시보드는 `api.github.com` 이외의 곳으로 데이터를 전송하지 않습니다.
 
+## Wiki 문서
+
+필수 Wiki 문서는 저장소의 [`docs/wiki/`](docs/wiki/)에 관리하고 서로 연결했습니다.
+
+- [시작하기](docs/wiki/Getting-Started.md)
+- [개발 가이드](docs/wiki/Development-Guide.md)
+- [문제 해결](docs/wiki/Troubleshooting.md)
+
+## 오픈소스 기본 문서
+
+- [MIT License](LICENSE)
+- [라이선스 비교](LICENSE_COMPARISON.md)
+- [기여 가이드](CONTRIBUTING.md)
+- [행동 강령](CODE_OF_CONDUCT.md)
+
+## 선택 과제 문서
+
+- [Inner Source 로드맵](INNER_SOURCE_ROADMAP.md)
+- [ADR 0001: GitHub REST API 선택](docs/adr/0001-github-rest-api-for-delivery-metrics.md)
+
 ### API 및 지표 산정 방식
 
 프론트엔드는 GitHub REST API를 사용하여 저장소 메타데이터, Pull Request, Issue, Commit 및 Deployment 정보를 가져옵니다. 변경 리드 타임은 Pull Request 생성부터 병합까지의 평균 시간이며, 이슈 처리 주기는 이슈 생성부터 종료까지의 평균 시간입니다. 배포 빈도는 최근 30일 동안의 하루 평균 배포 횟수로 계산합니다. 이 클라이언트는 각 리소스에서 최신 100개 항목까지 사용하며, 화면에서 로딩 중, API 오류 및 데이터 없음 상태를 명확하게 표시합니다.
