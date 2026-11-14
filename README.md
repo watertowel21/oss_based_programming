@@ -83,8 +83,14 @@ npm start
 ## 오픈소스 기본 문서
 
 - [MIT License](LICENSE)
+- [라이선스 비교](LICENSE_COMPARISON.md)
 - [기여 가이드](CONTRIBUTING.md)
 - [행동 강령](CODE_OF_CONDUCT.md)
+
+## 선택 과제 문서
+
+- [Inner Source 로드맵](INNER_SOURCE_ROADMAP.md)
+- [ADR 0001: GitHub REST API 선택](docs/adr/0001-github-rest-api-for-delivery-metrics.md)
 
 ### API 및 지표 산정 방식
 
