@@ -1,6 +1,7 @@
 # oss_based_programming
 Assignments and practice codes for oss-based programming class, 2026-2.
 
+[![CI](https://github.com/watertowel21/oss_based_programming/actions/workflows/deploy-dashboard.yml/badge.svg)](https://github.com/watertowel21/oss_based_programming/actions/workflows/deploy-dashboard.yml)
 [![Build](https://github.com/watertowel21/oss_based_programming/actions/workflows/metrics.yml/badge.svg)](https://github.com/watertowel21/oss_based_programming/actions/workflows/metrics.yml)
 [![Latest commit](https://img.shields.io/github/last-commit/watertowel21/oss_based_programming)](https://github.com/watertowel21/oss_based_programming/commits/main)
 [![License](https://img.shields.io/github/license/watertowel21/oss_based_programming)](LICENSE)
@@ -99,6 +100,19 @@ npm start
 ### 검증 방법
 
 ```bash
+cd react-practice
+npm run lint
 npm test -- --watchAll=false
 npm run build
 ```
+
+### CI/CD 워크플로우
+
+`.github/workflows/deploy-dashboard.yml`은 다음 순서로 실행됩니다.
+
+1. Node.js 18과 20 조합으로 의존성을 설치하고 lint/test를 실행합니다.
+2. 두 버전의 품질 검증이 모두 통과하면 production build를 생성합니다.
+3. build 결과를 GitHub Actions artifact로 업로드합니다.
+4. `main` 또는 배포 브랜치에 push되면 GitHub Pages로 배포합니다.
+
+테스트 단계에는 GitHub가 제공하는 `${{ secrets.GITHUB_TOKEN }}`을 환경 변수로 주입하지만, 애플리케이션 코드나 로그에 토큰을 출력하지 않습니다. 저장소의 민감한 값은 GitHub Secrets에만 저장해야 합니다.
